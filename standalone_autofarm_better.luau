@@ -3,15 +3,22 @@ local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local LocalPlayer = Players.LocalPlayer
 local Alert = Workspace.svcl_com.Alert
-local Modes = {"Easy", "Medium", "Hard"}
+local Modes = {"Hard", "Medium", "Easy"}
 
 -- Anti-AFK
 LocalPlayer.Idled:Connect(function()
+    warn("Anti-AFK triggered!")
     VirtualUser:CaptureController();VirtualUser:ClickButton2(Vector2.new())
 end)
 
 local function GetChar()
     return LocalPlayer.Character or (LocalPlayer.CharacterAdded:wait() and LocalPlayer.Character)
+end
+
+local function Touch(Part)
+    local RootPart = GetChar():WaitForChild("HumanoidRootPart")
+    firetouchinterest(RootPart, Part, 0)
+    firetouchinterest(RootPart, Part, 1)
 end
 
 local function Crack_Code()
@@ -50,7 +57,7 @@ local function FindReady()
 end
 
 local function JoinLift(ModeModel)
-    GetChar():PivotTo(ModeModel.Entry.LiftEntryInfo.CFrame)
+    Touch(ModeModel.Entry.LiftEntryInfo)
 end
 
 local function GotoSafespot(ModeModel)
@@ -58,7 +65,7 @@ local function GotoSafespot(ModeModel)
 end
 
 local function Escape(ModeModel)
-    GetChar():PivotTo(ModeModel.Main.Exit.CFrame)
+    Touch(ModeModel.Main.Exit)
 end
 
 local Wins = 0
@@ -88,7 +95,12 @@ while task.wait() do
         end
     until FinalRoomActive == true
     Connection:Disconnect()
-    Escape(CurrentMode)
+    -- Repeat Escape to ensure server lag doesn't cause touch to be ignored.
+    repeat task.wait()
+        Escape(CurrentMode)
+    until LocalPlayer.Ingame.Value <= 0
+    -- Teleport to Lobby Area for coolness.
+    GetChar():WaitForChild("HumanoidRootPart").CFrame = CFrame.new(-392, 261, 161)
     Wins += 1
     local Runtime = tick() - StartTime
     warn("----------------WIN STATISTICS----------------")
