@@ -79,6 +79,7 @@ while task.wait() do
         end
     end)
     repeat task.wait() 
+        -- Crack Code and Press Buttons to help players (faster they win faster you win)
         Crack_Code()
         Press_Buttons()
         if CurrentMode.Info.Value:match("1/") or CurrentMode.Info.Value:match("1 P") then
