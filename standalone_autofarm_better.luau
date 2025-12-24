@@ -64,17 +64,17 @@ end
 local Wins = 0
 local StartTime = tick()
 while task.wait() do
-    warn("Looking for next round..")
+    print("Looking for next round..")
     local CurrentMode = FindReady()
     JoinLift(CurrentMode)
     repeat task.wait() until LocalPlayer.Ingame.Value >= 1
-    warn("Going to Safespot..")
+    print("Going to Safespot..")
     GotoSafespot(CurrentMode)
     local FinalRoomActive = false
     local Connection
     Connection = Alert.OnClientEvent:Connect(function(message)
         if message:match("Final Room") then
-            warn("Final Room Active. Escaping..")
+            print("Final Room Active. Escaping..")
             FinalRoomActive = true
         end
     end)
@@ -91,7 +91,7 @@ while task.wait() do
     Wins += 1
     local Runtime = tick() - StartTime
     warn("----------------WIN STATISTICS----------------")
-    warn("Runtime:", Runtime/60, "minutes")
+    warn("Runtime:", math.round(Runtime/60), "minutes")
     warn("Current Session Wins:", Wins)
-    warn(((Wins/Runtime) * 60) * 60, "wins per hour.")
+    warn(math.round(((Wins/Runtime) * 60) * 60), "wins per hour.")
 end
